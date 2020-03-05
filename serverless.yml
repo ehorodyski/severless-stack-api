@@ -12,10 +12,11 @@ plugins:
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: ${env:STAGE}
-  region: ${env:REGION}
+  stage: dev
+  region: us-east-1
   environment:
-      tableName: ${env:TABLE_NOTES}
+      tableName: notes
+      stripeSecretKey: ${env:STRIPE_SECRET_KEY}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -67,5 +68,13 @@ functions:
       - http:
           path: notes/{id}
           method: delete
+          cors: true
+          authorizer: aws_iam
+  billing:
+    handler: billing.main
+    events:
+      - http:
+          path: billing
+          method: post
           cors: true
           authorizer: aws_iam
